@@ -1,7 +1,11 @@
 {
   "scripts": {
     "build": "tsc",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "migration:run": "tsx node_modules/typeorm/cli.js migration:run -d src/infrastructure/database/data-source.ts",
+    "migration:revert": "tsx node_modules/typeorm/cli.js migration:revert -d src/infrastructure/database/data-source.ts",
+    "migration:generate": "tsx node_modules/typeorm/cli.js migration:generate -d src/infrastructure/database/data-source.ts",
+    "migration:create": "tsx node_modules/typeorm/cli.js migration:create"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -22,6 +26,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
     "@types/node": "^26.4.0",
+    "tsx": "^4.23.13",
     "typescript": "^7.0.2"
   }
 }
