@@ -1,12 +1,14 @@
 import { createApp } from './app';
 import { AppDataSource } from '../infrastructure/database/data-source';
 import { env } from '../infrastructure/config/env';
-
-const app = createApp();
+import { buildContainer } from './composition';
 
 AppDataSource.initialize()
     .then(() => {
         console.log('Database connection established');
+
+        const { setupController } = buildContainer(AppDataSource);
+        const app = createApp({ setupController });
 
         const server = app.listen(env.port, () => {
             console.log(`Server listening on port ${env.port}`);

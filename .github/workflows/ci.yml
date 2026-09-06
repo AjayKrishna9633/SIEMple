@@ -2,4 +2,25 @@ name: CI Pipeline
 
 on:
    push:
-    branches: [main]
+    branches: [main,auth]
+    pull:_request:
+      branches: [main,auth]
+
+jobs:
+      build-and-test:
+        run-on: ubuntu-latest
+
+        steps:
+        name: Checkout repository code
+        uses: actions/checkout@v4
+
+        name: Step up node runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+        name: install project dependencies
+        run: npm install
+
+        name:  Build & package the application
+        run: npm run build

@@ -1,5 +1,7 @@
+import SetupPage from './pages/SetupPage'
+
 function App() {
-  return <h1>SIEMple</h1>
+  return <SetupPage />
 }
 
 export default App
