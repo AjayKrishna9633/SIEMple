@@ -7,8 +7,8 @@ AppDataSource.initialize()
     .then(() => {
         console.log('Database connection established');
 
-        const { setupController } = buildContainer(AppDataSource);
-        const app = createApp({ setupController });
+        const { setupController, authController } = buildContainer(AppDataSource);
+        const app = createApp({ setupController, authController });
 
         const server = app.listen(env.port, () => {
             console.log(`Server listening on port ${env.port}`);
