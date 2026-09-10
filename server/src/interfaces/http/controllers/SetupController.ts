@@ -16,12 +16,17 @@ export class SetupController {
     createAdmin = async (req: Request, res: Response): Promise<void> => {
         try {
             const { email, username, password } = req.body;
-            const admin = await this.createInitialAdmin.execute({ email, username, password });
+            const { user, challengeId } = await this.createInitialAdmin.execute({
+                email,
+                username,
+                password,
+            });
             res.status(201).json({
-                id: admin.getId(),
-                email: admin.getEmail(),
-                username: admin.getUsername(),
-                role: admin.getRole(),
+                id: user.getId(),
+                email: user.getEmail(),
+                username: user.getUsername(),
+                role: user.getRole(),
+                challengeId,
             });
         } catch (err) {
             res.status(400).json({ message: (err as Error).message });

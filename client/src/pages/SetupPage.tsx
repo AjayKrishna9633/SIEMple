@@ -1,6 +1,11 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { Shield, Cloud, Eye, EyeOff, Info } from 'lucide-react';
 import { getSetupStatus, createInitialAdmin } from '../api/setup';
+import OtpVerificationPage from './OtpVerificationPage';
+
+export interface SetupPageProps {
+  onSetupComplete: () => void;
+}
 
 const PASSWORD_MIN_LENGTH = 12;
 
@@ -17,9 +22,10 @@ function getPasswordError(password: string): string | null {
   return null;
 }
 
-export default function SetupPage() {
+export default function SetupPage({ onSetupComplete }: SetupPageProps) {
   const [checkingStatus, setCheckingStatus] = useState(true);
   const [setupComplete, setSetupComplete] = useState(false);
+  const [challengeId, setChallengeId] = useState<string | null>(null);
 
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -55,8 +61,12 @@ export default function SetupPage() {
     setSubmitting(true);
     setError(null);
     try {
-      await createInitialAdmin({ username: fullName.trim(), email: email.trim(), password });
-      setSuccess(true);
+      const admin = await createInitialAdmin({
+        username: fullName.trim(),
+        email: email.trim(),
+        password,
+      });
+      setChallengeId(admin.challengeId);
     } catch {
       setError('Could not create the administrator account. Please try again.');
     } finally {
@@ -64,12 +74,23 @@ export default function SetupPage() {
     }
   }
 
+  if (challengeId && !success) {
+    return (
+      <OtpVerificationPage
+        challengeId={challengeId}
+        purpose="email-verification"
+        email={email.trim()}
+        onVerified={() => setSuccess(true)}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#0b111a] flex items-center justify-center p-6">
       <div className="w-full max-w-md bg-[#141d2b] border border-[#232f42] rounded-lg overflow-hidden">
         <div className="px-8 pt-10 pb-6 border-b border-[#232f42] text-center">
           <Shield className="mx-auto text-[#7e93c4]" size={40} strokeWidth={1.75} />
-          <h1 className="mt-4 text-2xl font-bold text-[#a9c1f0]">Sentinel Command</h1>
+          <h1 className="mt-4 text-2xl font-bold text-[#a9c1f0]">SIEMple</h1>
           <p className="mt-1 text-xs tracking-[0.2em] font-mono text-[#6b7a91] uppercase">SOC OPS</p>
         </div>
 
@@ -77,13 +98,31 @@ export default function SetupPage() {
           {checkingStatus ? (
             <p className="text-center text-sm text-[#8593a8]">Checking setup status…</p>
           ) : setupComplete ? (
-            <p className="text-center text-sm text-[#8593a8]">
-              Setup has already been completed. An administrator account exists.
-            </p>
+            <div className="text-center">
+              <p className="text-sm text-[#8593a8]">
+                Setup has already been completed. An administrator account exists.
+              </p>
+              <button
+                type="button"
+                onClick={onSetupComplete}
+                className="mt-5 w-full bg-[#7e93c4] text-[#141d2b] font-bold py-3 rounded-md"
+              >
+                Continue to Sign In
+              </button>
+            </div>
           ) : success ? (
-            <p className="text-center text-sm text-[#8593a8]">
-              Administrator account created. You can now sign in.
-            </p>
+            <div className="text-center">
+              <p className="text-sm text-[#8593a8]">
+                Email verified and administrator account created. You can now sign in.
+              </p>
+              <button
+                type="button"
+                onClick={onSetupComplete}
+                className="mt-5 w-full bg-[#7e93c4] text-[#141d2b] font-bold py-3 rounded-md"
+              >
+                Continue to Sign In
+              </button>
+            </div>
           ) : (
             <>
               <div className="text-center space-y-2 mb-6">

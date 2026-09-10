@@ -8,6 +8,6 @@ export const AppDataSource = new DataSource({
     ssl: env.nodeEnv === 'production' ? { rejectUnauthorized: true } : false,
     synchronize: false,
     logging: env.nodeEnv === 'development',
-    entities: [__dirname + '/entities/*.entity{.ts,.js}'],
+    entities: [__dirname + '/entities/*{.ts,.js}'],
     migrations: [__dirname + '/migrations/*{.ts,.js}'],
 });

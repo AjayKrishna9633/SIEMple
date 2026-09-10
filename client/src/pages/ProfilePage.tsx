@@ -21,7 +21,7 @@ function daysBeforeNow(days: number): string {
 // authenticated user fetched from the backend once that's built.
 const MOCK_USER: ProfileUser = {
   fullName: 'Alex Mercer',
-  email: 'amercer@sentinel.local',
+  email: 'amercer@siemple.local',
   role: 'analyst',
   team: 'SOC Alpha Team',
   accountCreatedAt: daysBeforeNow(196),
@@ -81,7 +81,7 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-[#0b111a]">
       <header className="flex items-center gap-2.5 px-6 py-4 border-b border-[#232f42]">
         <Terminal className="text-[#7e93c4]" size={22} strokeWidth={2} />
-        <span className="text-lg font-bold text-[#a9c1f0]">Sentinel Command</span>
+        <span className="text-lg font-bold text-[#a9c1f0]">SIEMple</span>
       </header>
 
       <main className="max-w-4xl mx-auto px-6 py-10">

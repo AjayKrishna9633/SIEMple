@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Shield, LayoutGrid, Eye, EyeOff, AlertCircle, AlertTriangle } from 'lucide-react';
-import { login, verifyOtp, type AuthenticatedUser } from '../api/auth';
+import { login, type AuthenticatedUser } from '../api/auth';
+import OtpVerificationPage from './OtpVerificationPage';
 
 type Step = 'credentials' | 'otp' | 'success';
 
@@ -14,9 +15,6 @@ export default function LoginPage() {
   const [authenticating, setAuthenticating] = useState(false);
 
   const [challengeId, setChallengeId] = useState('');
-  const [code, setCode] = useState('');
-  const [otpError, setOtpError] = useState<string | null>(null);
-  const [verifying, setVerifying] = useState(false);
 
   const [authenticatedUser, setAuthenticatedUser] = useState<AuthenticatedUser | null>(null);
 
@@ -35,19 +33,19 @@ export default function LoginPage() {
     }
   }
 
-  async function handleVerify(e: FormEvent) {
-    e.preventDefault();
-    setVerifying(true);
-    setOtpError(null);
-    try {
-      const user = await verifyOtp({ challengeId, code });
-      setAuthenticatedUser(user);
-      setStep('success');
-    } catch {
-      setOtpError('Invalid or expired code');
-    } finally {
-      setVerifying(false);
-    }
+  if (step === 'otp') {
+    return (
+      <OtpVerificationPage
+        challengeId={challengeId}
+        purpose="login"
+        email={email}
+        onVerified={(user) => {
+          setAuthenticatedUser(user);
+          setStep('success');
+        }}
+        onBack={() => setStep('credentials')}
+      />
+    );
   }
 
   return (
@@ -55,7 +53,7 @@ export default function LoginPage() {
       <div className="py-8 border-b border-[#232f42] text-center">
         <div className="flex items-center justify-center gap-2.5">
           <Shield className="text-[#7e93c4]" size={28} strokeWidth={2} />
-          <h1 className="text-2xl font-extrabold tracking-wide text-white">SENTINEL COMMAND</h1>
+          <h1 className="text-2xl font-extrabold tracking-wide text-white">SIEMple</h1>
         </div>
         <p className="mt-2 text-xs tracking-[0.3em] text-[#6b7a91] uppercase">SOC Ops</p>
       </div>
@@ -149,60 +147,6 @@ export default function LoginPage() {
               >
                 <AlertTriangle size={14} />
                 Request Emergency Access
-              </button>
-            </>
-          )}
-
-          {step === 'otp' && (
-            <>
-              <h2 className="text-xl font-bold text-center text-[#e5eaf2]">Enter One-Time Code</h2>
-              <p className="mt-1 text-sm text-center text-[#8593a8]">
-                A code was generated for your account.
-              </p>
-              <p className="mt-1 text-xs text-center text-[#5b6b82]">
-                Dev mode: email delivery isn't wired up yet — check the server console for the code.
-              </p>
-
-              <form onSubmit={handleVerify} className="mt-6 space-y-4">
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  required
-                  maxLength={6}
-                  value={code}
-                  onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
-                  placeholder="6-digit code"
-                  className={`w-full bg-[#0a0f1a] border rounded-md px-4 py-2.5 text-center text-lg tracking-[0.4em] text-[#e5eaf2] placeholder:tracking-normal placeholder:text-[#4d5a70] focus:outline-none ${
-                    otpError ? 'border-red-500' : 'border-[#232f42] focus:border-[#7e93c4]'
-                  }`}
-                />
-
-                {otpError && (
-                  <p className="flex items-center gap-1.5 text-sm text-red-400">
-                    <AlertCircle size={16} />
-                    {otpError}
-                  </p>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={code.length !== 6 || verifying}
-                  className="w-full bg-[#7e93c4] text-[#141d2b] font-bold py-3 rounded-md disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  {verifying ? 'Verifying…' : 'Verify'}
-                </button>
-              </form>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setStep('credentials');
-                  setCode('');
-                  setOtpError(null);
-                }}
-                className="mt-4 w-full text-sm text-[#8593a8] hover:text-[#c3cede]"
-              >
-                Back
               </button>
             </>
           )}

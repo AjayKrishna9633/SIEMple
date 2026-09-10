@@ -15,6 +15,7 @@ export interface CreatedAdmin {
   email: string;
   username: string;
   role: string;
+  challengeId: string;
 }
 
 export async function getSetupStatus(): Promise<SetupStatus> {

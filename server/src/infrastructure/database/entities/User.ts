@@ -20,6 +20,9 @@ export class UserEntity {
     @Column({ type: 'boolean', name: 'is_active', default: true })
     isActive!: boolean;
 
+    @Column({ type: 'boolean', name: 'is_email_verified', default: false })
+    isEmailVerified!: boolean;
+
     @Column({ type: 'timestamptz', name: 'last_login_at', nullable: true })
     lastLoginAt!: Date | null;
 

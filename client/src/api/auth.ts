@@ -30,3 +30,13 @@ export async function verifyOtp(payload: VerifyOtpPayload): Promise<Authenticate
   const { data } = await httpClient.post<AuthenticatedUser>('/auth/verify-otp', payload);
   return data;
 }
+
+export async function verifyEmail(payload: VerifyOtpPayload): Promise<AuthenticatedUser> {
+  const { data } = await httpClient.post<AuthenticatedUser>('/auth/verify-email', payload);
+  return data;
+}
+
+export async function resendOtp(challengeId: string): Promise<{ retryAfterMs: number }> {
+  const { data } = await httpClient.post<{ retryAfterMs: number }>('/auth/resend-otp', { challengeId });
+  return data;
+}

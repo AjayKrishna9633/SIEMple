@@ -1,4 +1,4 @@
-import { randomInt } from 'node:crypto';
+import { generateOtpCode } from '../../shared/utils/generateOtpCode';
 import { UserRepository } from '../../domain/repositories/UserRepository';
 import { PasswordHasher } from '../ports/PasswordHasher';
 import { OtpChallengeStore } from '../ports/OtpChallengeStore';
@@ -35,8 +35,8 @@ export class AuthenticateUser {
             throw new Error(INVALID_CREDENTIALS_MESSAGE);
         }
 
-        const code = randomInt(0, 1_000_000).toString().padStart(6, '0');
-        const challengeId = await this.otpChallengeStore.create(user.getId(), code, this.otpTtlMs);
+        const code = generateOtpCode();
+        const challengeId = await this.otpChallengeStore.create(user.getId(), 'login', code, this.otpTtlMs);
         await this.otpDeliveryService.deliver(user.getEmail(), code);
 
         return { challengeId };

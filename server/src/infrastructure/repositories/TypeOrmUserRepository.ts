@@ -28,6 +28,7 @@ export class TypeOrmUserRepository implements UserRepository {
             username: user.getUsername(),
             role: user.getRole(),
             isActive: user.getIsActive(),
+            isEmailVerified: user.getIsEmailVerified(),
             lastLoginAt: user.getLastLoginAt(),
         });
         await this.repo.save(entity);
@@ -41,6 +42,7 @@ export class TypeOrmUserRepository implements UserRepository {
             username: row.username,
             role: row.role,
             isActive: row.isActive,
+            isEmailVerified: row.isEmailVerified,
             lastLoginAt: row.lastLoginAt,
             createdAt: row.createdAt,
         });

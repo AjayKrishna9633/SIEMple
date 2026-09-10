@@ -7,6 +7,7 @@ export interface UserProps {
   username: string;
   role: UserRole;
   isActive?: boolean;
+  isEmailVerified?: boolean;
   lastLoginAt?: Date | null;
   createdAt?: Date;
 }
@@ -20,6 +21,7 @@ export class User {
   private username: string;
   private role: UserRole;
   private isActive: boolean;
+  private isEmailVerified: boolean;
   private lastLoginAt: Date | null;
   private readonly createdAt: Date;
 
@@ -43,6 +45,7 @@ export class User {
     this.username = props.username;
     this.role = props.role;
     this.isActive = props.isActive ?? true;
+    this.isEmailVerified = props.isEmailVerified ?? false;
     this.lastLoginAt = props.lastLoginAt ?? null;
     this.createdAt = props.createdAt ?? new Date();
   }
@@ -71,6 +74,10 @@ export class User {
     return this.isActive;
   }
 
+  getIsEmailVerified(): boolean {
+    return this.isEmailVerified;
+  }
+
   getLastLoginAt(): Date | null {
     return this.lastLoginAt;
   }
@@ -89,6 +96,10 @@ export class User {
 
   recordLogin(): void {
     this.lastLoginAt = new Date();
+  }
+
+  markEmailVerified(): void {
+    this.isEmailVerified = true;
   }
 
   changeRole(role: UserRole): void {
