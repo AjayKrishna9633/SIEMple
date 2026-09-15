@@ -1,6 +1,8 @@
 {
   "scripts": {
     "build": "tsc",
+    "start": "node dist/main/index.js",
+    "dev": "tsx watch src/main/index.ts",
     "typecheck": "tsc --noEmit",
     "lint": "oxlint",
     "migration:run": "tsx node_modules/typeorm/cli.js migration:run -d src/infrastructure/database/data-source.ts",
@@ -19,7 +21,6 @@
     "morgan": "^1.12.0",
     "pg": "^8.23.0",
     "reflect-metadata": "^0.2.2",
-    "resend": "^6.27.0",
     "typeorm": "^1.1.1"
   },
   "devDependencies": {

@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { Shield, MailCheck, AlertCircle } from 'lucide-react';
 import { verifyOtp, verifyEmail, resendOtp, type AuthenticatedUser } from '../api/auth';
+import { errorMessage } from '../api/errors';
 
 export type OtpPurpose = 'login' | 'email-verification';
 
@@ -28,11 +29,6 @@ const COPY: Record<OtpPurpose, { heading: string; blurb: string; submit: string 
     submit: 'Verify',
   },
 };
-
-function errorMessage(err: unknown, fallback: string): string {
-  const response = (err as { response?: { data?: { message?: string } } }).response;
-  return response?.data?.message ?? fallback;
-}
 
 export default function OtpVerificationPage({
   challengeId,

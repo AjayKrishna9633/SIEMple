@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { Clock } from '../../application/ports/Clock';
 import {
     OtpChallengeStore,
     OtpPurpose,
@@ -22,14 +23,19 @@ interface Challenge {
 export class InMemoryOtpChallengeStore implements OtpChallengeStore {
     private readonly challenges = new Map<string, Challenge>();
 
+    // Shares the application's clock so a frozen test clock stays consistent
+    // with the cooldown arithmetic in ResendOneTimeCode.
+    constructor(private readonly clock: Clock) {}
+
     async create(userId: string, purpose: OtpPurpose, code: string, ttlMs: number): Promise<string> {
         const challengeId = randomUUID();
+        const now = this.clock.now().getTime();
         this.challenges.set(challengeId, {
             userId,
             purpose,
             code,
-            expiresAt: Date.now() + ttlMs,
-            lastSentAt: Date.now(),
+            expiresAt: now + ttlMs,
+            lastSentAt: now,
         });
         return challengeId;
     }
@@ -41,7 +47,7 @@ export class InMemoryOtpChallengeStore implements OtpChallengeStore {
         this.challenges.delete(challengeId);
 
         if (challenge.purpose !== purpose) return null;
-        if (Date.now() > challenge.expiresAt) return null;
+        if (this.clock.now().getTime() > challenge.expiresAt) return null;
         if (challenge.code !== code) return null;
 
         return challenge.userId;
@@ -51,7 +57,7 @@ export class InMemoryOtpChallengeStore implements OtpChallengeStore {
         const challenge = this.challenges.get(challengeId);
         if (!challenge) return null;
 
-        if (Date.now() > challenge.expiresAt) {
+        if (this.clock.now().getTime() > challenge.expiresAt) {
             this.challenges.delete(challengeId);
             return null;
         }
@@ -67,8 +73,9 @@ export class InMemoryOtpChallengeStore implements OtpChallengeStore {
         const challenge = this.challenges.get(challengeId);
         if (!challenge) return;
 
+        const now = this.clock.now().getTime();
         challenge.code = code;
-        challenge.expiresAt = Date.now() + ttlMs;
-        challenge.lastSentAt = Date.now();
+        challenge.expiresAt = now + ttlMs;
+        challenge.lastSentAt = now;
     }
 }

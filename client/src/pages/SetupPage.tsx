@@ -1,11 +1,8 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { Shield, Cloud, Eye, EyeOff, Info } from 'lucide-react';
+import { Shield, Eye, EyeOff, Info } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { getSetupStatus, createInitialAdmin } from '../api/setup';
 import OtpVerificationPage from './OtpVerificationPage';
-
-export interface SetupPageProps {
-  onSetupComplete: () => void;
-}
 
 const PASSWORD_MIN_LENGTH = 12;
 
@@ -22,7 +19,9 @@ function getPasswordError(password: string): string | null {
   return null;
 }
 
-export default function SetupPage({ onSetupComplete }: SetupPageProps) {
+export default function SetupPage() {
+  const navigate = useNavigate();
+  const onSetupComplete = () => navigate('/login', { replace: true });
   const [checkingStatus, setCheckingStatus] = useState(true);
   const [setupComplete, setSetupComplete] = useState(false);
   const [challengeId, setChallengeId] = useState<string | null>(null);
@@ -132,27 +131,8 @@ export default function SetupPage({ onSetupComplete }: SetupPageProps) {
                 </p>
               </div>
 
-              <button
-                type="button"
-                disabled
-                title="Azure AD sign-in isn't available yet"
-                className="w-full flex items-center justify-center gap-2 bg-[#232f42] text-[#dbe4f5] py-3 rounded-md font-semibold opacity-60 cursor-not-allowed"
-              >
-                <Cloud size={18} />
-                Sign in with Azure AD
-              </button>
-              <p className="mt-2 text-xs text-center text-[#5b6b82]">
-                The first person to sign in here becomes the Administrator.
-              </p>
-
-              <div className="flex items-center gap-3 my-6">
-                <div className="h-px flex-1 bg-[#232f42]" />
-                <span className="text-xs font-mono text-[#5b6b82]">OR</span>
-                <div className="h-px flex-1 bg-[#232f42]" />
-              </div>
-
               <p className="text-xs font-mono tracking-wide text-[#8593a8] uppercase mb-4">
-                Create a local administrator account
+                Create the administrator account
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-5">
